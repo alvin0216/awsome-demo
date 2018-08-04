@@ -22,10 +22,10 @@ class Compile {
     node2fragment(el) { // 将el的内容全部放入内存中
         // 文档碎片
         let fragment = document.createDocumentFragment();
-        let firstChild;
+        // let firstChild;
 
-        while (firstChild = el.firstChild) { // 移动DOM到文档碎片中
-            fragment.appendChild(firstChild)
+        while (el.firstChild) { // 移动DOM到文档碎片中
+            fragment.appendChild(el.firstChild)
         }
         return fragment;
     }
