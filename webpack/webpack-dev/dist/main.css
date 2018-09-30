@@ -1,0 +1,6 @@
+.red {
+  color: red;
+  -webkit-transform: translateX(50%);
+          transform: translateX(50%);
+}
+
