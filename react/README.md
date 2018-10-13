@@ -15,6 +15,10 @@
 
 - [react-HOC](./react-HOC（高阶组件）)
 
+### componentDidCatch
+
+- [React 生命周期函数： 捕捉报错信息以及处理](./componentDidCatch-错误处理)
+
 ### 快速配置 react + antd + less
 
 - [react-antd-less 入口](./react-antd-less)
