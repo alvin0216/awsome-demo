@@ -11,5 +11,10 @@
 * redux 入门配置 - [配置文件](./redux-入门配置)
   ![](https://user-gold-cdn.xitu.io/2018/10/13/1666bd28e8654946?w=272&h=132&f=png&s=4322)
 
+### 高阶组件
+
+- [react-HOC](./react-HOC（高阶组件）)
+
 ### 快速配置 react + antd + less
-[react-antd-less 入口](./react-antd-less)
+
+- [react-antd-less 入口](./react-antd-less)
