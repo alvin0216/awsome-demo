@@ -120,3 +120,33 @@ export const actionCreator = payload => ({
 - `route` => `<Route path='path' component={component}/>`
 - `navlink` => `<NavLink to={path}>{anchorText}</NavLink>`
 - `router` => `<Router></Router>`
+
+### setting.json
+
+个人 vscode 配置
+
+```json
+{
+  "window.menuBarVisibility": "default",
+  "editor.minimap.enabled": false,
+  "git.autofetch": true,
+  "explorer.confirmDelete": false,
+  "prettier.singleQuote": true,
+  "prettier.semi": false,
+  "prettier.tabSize": 2,
+  "editor.tabSize": 2,
+  "search.followSymlinks": false,
+  "javascript.updateImportsOnFileMove.enabled": "always"
+}
+```
+
+## google 插件
+
+- 代理大师(Google Edition)
+- AdGuard 广告拦截器
+- Octotree
+  - github 辅助工具
+- React Developer Tools
+- Redux DevTools
+- Tampermonkey
+  - 破解网盘
