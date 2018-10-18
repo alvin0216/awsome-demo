@@ -128,15 +128,26 @@ export const actionCreator = payload => ({
 ```json
 {
   "window.menuBarVisibility": "default",
+  // 右侧代码预览框
   "editor.minimap.enabled": false,
   "git.autofetch": true,
   "explorer.confirmDelete": false,
-  "prettier.singleQuote": true,
-  "prettier.semi": false,
-  "prettier.tabSize": 2,
-  "editor.tabSize": 2,
+  // 避免卡死
   "search.followSymlinks": false,
-  "javascript.updateImportsOnFileMove.enabled": "always"
+  // 修改文件时修改各个文件的 import 路径
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  // react html 自动补全
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact"
+  },
+  // 单引号
+  "prettier.singleQuote": true,
+  // 去掉代码结尾的分号
+  "prettier.semi": false,
+  // 代码间距
+  "prettier.tabSize": 2,
+  // 宽度 120 时换行
+  "prettier.printWidth": 120
 }
 ```
 
