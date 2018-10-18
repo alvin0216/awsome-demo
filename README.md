@@ -144,8 +144,8 @@ export const actionCreator = payload => ({
   "prettier.singleQuote": true,
   // 去掉代码结尾的分号
   "prettier.semi": false,
-  // 宽度 120 时换行
-  "prettier.printWidth": 120
+  // 宽度 90 时换行
+  "prettier.printWidth": 90
 }
 ```
 
