@@ -132,20 +132,18 @@ export const actionCreator = payload => ({
   "editor.minimap.enabled": false,
   "git.autofetch": true,
   "explorer.confirmDelete": false,
-  // 避免卡死
   "search.followSymlinks": false,
-  // 修改文件时修改各个文件的 import 路径
   "javascript.updateImportsOnFileMove.enabled": "always",
   // react html 自动补全
   "emmet.includeLanguages": {
     "javascript": "javascriptreact"
   },
+  // 代码间距
+  "editor.tabSize": 2,
   // 单引号
   "prettier.singleQuote": true,
   // 去掉代码结尾的分号
   "prettier.semi": false,
-  // 代码间距
-  "prettier.tabSize": 2,
   // 宽度 120 时换行
   "prettier.printWidth": 120
 }
