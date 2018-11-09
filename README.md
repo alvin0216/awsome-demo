@@ -14,7 +14,7 @@
 ## vue
 
 - [实现简易的 VUE-MVVM](./vue/vue-mvvm)
-- [Vue render 函数解析](./vue/vue-render.md)
+- [Vue render 函数解析](https://github.com/gershonv/my-code-store/issues/1)
 
 ## html && css
 
