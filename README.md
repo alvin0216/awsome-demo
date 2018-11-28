@@ -34,4 +34,13 @@
 - [基于 antd 风格的 element-table + pagination 的二次封装](https://gershonv.github.io/2018/07/07/vue-element-table/)
 - [一步步实现 VUE-MVVM 系列，储备面试技能](https://juejin.im/post/5b4efdd86fb9a04fe0180af2)
 
-http... koa...
+## HTTP
+
+- [HTTP - 导学](https://gershonv.github.io/2018/11/20/http-%E5%AF%BC%E5%AD%A6/)
+- [HTTP - TCP 三次握手四次挥手](https://gershonv.github.io/2018/11/21/http-TCP/)
+- [HTTP - 跨域](https://gershonv.github.io/2018/11/22/http-%E8%B7%A8%E5%9F%9F/)
+- [HTTP - 缓存机制](https://gershonv.github.io/2018/11/23/http-cache/)
+- [HTTP - keep-alive](https://gershonv.github.io/2018/11/23/http-%E9%95%BF%E8%BF%9E%E6%8E%A5/)
+- [HTTP - 浏览器输入 url 后 http 请求返回的完整过程](https://gershonv.github.io/2018/11/23/http-url-to-render/)
+
+更多文章请看博客yo，实时会更新在博客和这个仓库的。
