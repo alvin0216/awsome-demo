@@ -27,7 +27,9 @@
 ## webpack
 
 - [webpack - 入门篇](https://gershonv.github.io/2018/10/10/webpack-%E5%85%A5%E9%97%A8/)
-- [webpack - babel 篇](https://gershonv.github.io/2018/10/11/webpack-babel/)
+- [webpack - 理论篇](https://gershonv.github.io/2018/10/11/webpack-theory/)
+- [webpack - babel篇](https://gershonv.github.io/2018/10/11/webpack-babel/)
+- [webpack - 插件篇](https://gershonv.github.io/2018/10/12/webpack-plugins/)
 
 ## Vue
 
