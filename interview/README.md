@@ -77,3 +77,46 @@ function getParams(url) {
 }
 console.log(getParams(url)) // `{a: '1', b: '2', c: '', d: 'xxx', e: undefined}
 ```
+
+### 实现数组扁平化
+
+```js
+let arr = [[1, 2], [2, 3, [4]], 3]
+
+arr.flat(2) // es7 [ 1, 2, 2, 3, 4, 3 ]
+
+const flat = arr => arr.toString().split(',').map(item => +item)
+flat(arr) // [ 1, 2, 2, 3, 4, 3 ] 缺点 string/number 类型的区分
+
+function flat2(arr) {
+  let result = []
+  arr.forEach(item => {
+    if (Array.isArray(item)) {
+      result = result.concat(flat2(item))
+    } else {
+      result.push(item)
+    }
+  })
+  return result
+}
+
+console.log(flat2(arr)) //  通过递归实现 [1, 2, 2, 3, 4, 3 ] 
+```
+
+### 爬楼梯问题
+
+有一楼梯共 M 级，刚开始时你在第一级，若每次只能跨上一级或二级，要走上第 M 级，共有多少种走法？
+
+分析： 这个问题要倒过来看，要到达n级楼梯，只有两种方式，从（n-1）级 或 （n-2）级到达的。所以可以用递推的思想去想这题，假设有一个数组s[n], 那么s[1] = 1（由于一开始就在第一级，只有一种方法）， s[2] = 1（只能从s[1]上去 没有其他方法）。
+
+```js
+function cStairs(n) {
+  if (n === 1 || n === 2) {
+    return 1
+  } else {
+    return cStairs(n - 1) + cStairs(n - 2)
+  }
+}
+
+console.log(cStairs(6)) // 8 其实就是斐波纳契数列问题
+```
