@@ -105,6 +105,52 @@ let arr = [2, 1, 34, 5, 6, 7]
 console.log(quickSort(arr)) // [ 1, 2, 5, 6, 7, 34 ]
 ```
 
+## 希尔排序
+
+希尔排序是插入排序的改良算法，但是核心理念与插入算法又不同，它会先比较距离较远的元素，而非相邻的元素。文字太枯燥，还是看下面的动图吧：
+
+![](https://user-gold-cdn.xitu.io/2018/8/14/16538fc898c88c5f?imageslim)
+
+在实现之前，先看下刚才插入排序怎么写的：
+
+```js
+function insertSort(arr) {
+  //外循环从1开始，默认arr[0]是有序段
+  for (let i = 1; i < arr.length; i++) {
+    //j = i,将arr[j]依次插入有序段中
+    for (let j = i; j > 0; j--) {
+      if (arr[j] < arr[j - 1]) {
+        [arr[j], arr[j - 1]] = [arr[j - 1], arr[j]]
+      } else {
+        break
+      }
+    }
+  }
+  return arr
+}
+```
+现在，不同之处是在上面的基础上，让步长按照3、2、1来进行比较，相当于是三层循环和嵌套啦。
+
+```js
+function shellSort(arr, gap) {
+  for (let i = 0; i < gap.length; i++) { //最外层循环，一次取不同的步长，步长需要预先给出
+    let n = gap[i] //步长为n
+    for (let j = i + n; j < arr.length; j++) { //接下类和插入排序一样，j循环依次取后面的数
+      for (let k = j; k > 0; k -= n) {  //k循环进行比较，和直接插入的唯一区别是1变为了n       
+        if (arr[k] < arr[k - n]) {
+          [arr[k], arr[k - n]] = [arr[k - n], arr[k]]
+          console.log(`当前序列为[${arr}] \n 交换了${arr[k]}和${arr[k - n]}`) //为了观察过程
+        }
+      }
+    }
+  }
+  return arr
+}
+
+let arr = [2, 1, 34, 5, 6, 7]
+console.log(shellSort(arr, [3, 2, 1])) // [ 1, 2, 5, 6, 7, 34 ]
+```
+
 ## 参考自
 
 - [前端笔试&面试爬坑系列---算法](https://juejin.im/post/5b72f0caf265da282809f3b5#heading-1)
