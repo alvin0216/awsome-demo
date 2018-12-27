@@ -2,7 +2,7 @@
 
 ![](https://user-gold-cdn.xitu.io/2018/9/9/165bd6dedf755d33?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
 
-时间复杂度: 第一遍找元素O(n),第二遍找位置O(n). n 即长度。
+时间复杂度: 第一遍找元素 O(n),第二遍找位置 O(n). n 即长度。
 
 ## 冒泡排序
 
@@ -71,6 +71,38 @@ function insertSort(arr) {
   }
   return arr
 }
+```
+
+## 快速排序
+
+> important
+> 快排是处理大数据最快的排序算法之一。它是一种分而治之的算法，通过递归的方式将数据依次分解为包含较小元素和较大元素的不同子序列。该算法不断重复这个步骤直至所有数据都是有序的。
+
+简单说： 找到一个数作为参考，比这个数字大的放在数字左边，比它小的放在右边； 然后分别再对左边和右变的序列做相同的操作:
+
+1. 选择一个基准元素，将列表分割成两个子序列；
+2. 对列表重新排序，将所有小于基准值的元素放在基准值前面，所有大于基准值的元素放在基准值的后面；
+3. 分别对较小元素的子序列和较大元素的子序列重复步骤1和2
+
+![](https://user-gold-cdn.xitu.io/2018/8/14/16538fc898c22284?imageslim)
+
+```js
+function quickSort(arr) {
+  if (arr.length <= 1) return arr
+  let [left, right] = [[], []]
+  let current = arr.splice(0, 1)
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] < current[0]) {
+      left.push(arr[i])
+    } else {
+      right.push(arr[i])
+    }
+  }
+  return quickSort(left).concat(current, quickSort(right))
+}
+
+let arr = [2, 1, 34, 5, 6, 7]
+console.log(quickSort(arr)) // [ 1, 2, 5, 6, 7, 34 ]
 ```
 
 ## 参考自
