@@ -121,7 +121,7 @@
 - 场景：动态导航栏
 - 代码: [在线演示](https://codepen.io/gershonv/pen/XWrGLvo)
 
-![](https://user-gold-cdn.xitu.io/2019/8/13/16c89a88691d5586?imageslim)
+![](https://user-gold-cdn.xitu.io/2019/8/15/16c93317e5c79625?imageslim)
 
 ### 气泡背景墙
 
@@ -153,7 +153,7 @@
 - 场景：图片裁剪、新手引导、背景镂空、投射定位
 - 代码: [在线演示](https://codepen.io/JowayYoung/pen/zYONxRG)
 
-![](https://user-gold-cdn.xitu.io/2019/8/15/16c93317e5c79625?imageslim)
+![](https://user-gold-cdn.xitu.io/2019/8/22/16cb95deb1e5a956?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
 
 ## 参考
 
