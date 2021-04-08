@@ -94,7 +94,7 @@ class MyPromise {
         setTimeout(() => {
           try {
             const x = onFulfilled(this.value);
-            resolve(x);
+            resolvePromise(promise2, x, resolve, reject);
           } catch (e) {
             reject(e);
           }
@@ -106,7 +106,7 @@ class MyPromise {
         setTimeout(() => {
           try {
             const x = onRejected(this.reason);
-            resolve(x);
+            resolvePromise(promise2, x, resolve, reject);
           } catch (e) {
             reject(e);
           }
@@ -119,7 +119,7 @@ class MyPromise {
           setTimeout(() => {
             try {
               const x = onFulfilled(this.value);
-              resolve(x);
+              resolvePromise(promise2, x, resolve, reject);
             } catch (e) {
               reject(e);
             }
@@ -130,7 +130,7 @@ class MyPromise {
           setTimeout(() => {
             try {
               const x = onRejected(this.reason);
-              resolve(x);
+              resolvePromise(promise2, x, resolve, reject);
             } catch (e) {
               reject(e);
             }
@@ -140,6 +140,34 @@ class MyPromise {
     });
 
     return promise2;
+  }
+}
+
+// ? see test6+ 对 x 进行判断
+function resolvePromise(promise2, x, resolve, reject) {
+  // 如果 promise 和 x 指向同一对象，以 TypeError 为据因拒绝执行 promise
+  if (promise2 === x) {
+    throw new TypeError('Chaining cycle detected for promise');
+  }
+
+  if (x instanceof MyPromise) {
+    // x 为 Promise
+    if (x.status === PENDING) {
+      x.then(
+        (y) => {
+          resolvePromise(promise2, y, resolve, reject);
+        },
+        (reason) => {
+          reject(reason);
+        },
+      );
+    } else {
+      x.then(resolve, reject);
+    }
+  } else if ((x !== null && typeof x === 'function') || typeof x === 'object') {
+    // x 为对象和函数
+    // } else {
+    resolve(x);
   }
 }
 
