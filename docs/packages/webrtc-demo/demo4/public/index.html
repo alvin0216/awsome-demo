@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>webrtc-demo4</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="entry">
+      <input type="text" placeholder="请输入姓名" />
+      <button>进入房间</button>
+    </div>
+    <main style="display: none;">
+      <div class="box">
+        <div class="list">
+          <h5>点击 呼叫</h5>
+          <ul class="userList">
+            <!-- <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li> -->
+          </ul>
+        </div>
+        <div class="">
+          <video id="rtcA" controls autoplay></video>
+          <video id="rtcB" controls autoplay></video>
+        </div>
+      </div>
+    </main>
+    <script src="./js/getUserMedia.js"></script>
+    <script src="./js/socket.io.js"></script>
+    <script src="./js/main.js"></script>
+  </body>
+</html>
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>webrtc</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./js/socket.io.js"></script>
+  </head>
+  <body onbeforeunload="onbeforeunload()">
+    <div class="box">
+      <div class="item">
+        <video id="rtcA" controls autoplay></video>
+        <h3>Peer A</h3>
+        <div class="message-box rtcA-message-box" style="display: none;">
+          <h4>收消息</h4>
+          <ul class="message-list"></ul>
+        </div>
+      </div>
+      <div class="item">
+        <video id="rtcB" controls autoplay></video>
+        <h3>Peer B</h3>
+        <div class="btn-group">
+          <button class="call">呼叫</button>
+          <button class="hangup">挂断</button>
+        </div>
+        <div class="message-box" style="display: none;">
+          <h4>发消息</h4>
+          <textarea name="" id="" cols="20" rows="5"></textarea>
+          <br />
+          <button class="send-btn">发送消息</button>
+        </div>
+      </div>
+    </div>
+    <script src="./js/getUserMedia.js"></script>
+
+    <script>
+      getUserMedia().then((mediaStream) => {
+        var peerA = null
+        var peerB = null
+        var channelA = null
+        var channelB = null
+
+        function initPeer() {
+          // 创建输出端 PeerConnection
+          var PeerConnection =
+            window.RTCPeerConnection ||
+            window.mozRTCPeerConnection ||
+            window.webkitRTCPeerConnection
+
+          // === 创建输出端 A
+          peerA = new PeerConnection()
+          peerA.addStream(mediaStream) // 添加本地流
+
+          // 监听 A 的ICE候选信息，如果收集到，就添加给 B
+          peerA.onicecandidate = (event) => {
+            if (event.candidate) {
+              peerB.addIceCandidate(event.candidate)
+            }
+          }
+
+          // === 创建呼叫端 B
+          peerB = new PeerConnection()
+          peerB.onaddstream = (event) => {
+            // 监听是否有媒体流接入，如果有就赋值给 rtcB 的 src
+            console.log('event-stream', event)
+            var video = document.querySelector('#rtcB')
+            video.srcObject = event.stream
+          }
+          // 监听 B 的ICE候选信息 如果收集到，就添加给 A
+          peerB.onicecandidate = (event) => {
+            if (event.candidate) {
+              peerA.addIceCandidate(event.candidate)
+            }
+          }
+
+          // === RTCDataChannel: 在点对点之间，传播任意数据。它的API与WebSockets的API相同。
+
+          channelB = peerB.createDataChannel('messagechannel')
+          channelB.onopen = (event) => {
+            console.log('channelB onopen')
+          }
+          channelB.onclose = function (event) {
+            console.log('channelB onclose')
+          }
+
+          peerA.ondatachannel = function (event) {
+            channelA = event.channel
+            channelA.onopen = (e) => {
+              console.log('channelA onopen')
+            }
+            channelA.onclose = (e) => {
+              console.log('channelA onclose')
+            }
+            channelA.onmessage = (e) => {
+              console.log('channelA recieve message ', e.data)
+              var ul = document.querySelector('.message-list')
+              var li = document.createElement('li')
+              li.innerText = e.data
+              ul.append(li)
+            }
+          }
+        }
+
+        document.querySelector('.call').addEventListener('click', call, false)
+        document
+          .querySelector('.hangup')
+          .addEventListener('click', hangup, false)
+        document.querySelector('.send-btn').onclick = function (e) {
+          var input = document.querySelector('.message-box textarea')
+          channelB.send(input.value)
+        }
+
+        /**
+         * peerB.createOffer start
+         * peerB.setLocalDescription(offerB): 呼叫端设置本地 offer 描述
+         * peerA.setRemoteDescription(offerB):  接收端设置远程 offer 描述
+         * peerA.createAnswer(): 创建 answerA
+         * peerA.setLocalDescription(answerA):  接收端设置本地 answer 描述
+         * peerB.setRemoteDescription(answerA): 呼叫端设置远程 answer 描述
+         *
+         */
+        async function call() {
+          if (!peerA || !peerB) {
+            // 判断是否有对应实例，没有就重新创建
+            initPeer()
+          }
+          try {
+            // 1. 创建 offer
+            let offer = await peerB.createOffer({
+              offerToReceiveAudio: 1,
+              offerToReceiveVideo: 1,
+            })
+            await peerB.setLocalDescription(offer) // 呼叫端设置本地 offer 描述
+            await peerA.setRemoteDescription(offer) // 接收端设置远程 offer 描述
+
+            const answer = await peerA.createAnswer() // 创建 answerA
+            await peerA.setLocalDescription(answer) // 接收端设置本地 answer 描述
+            await peerB.setRemoteDescription(answer) // 呼叫端设置远程 answer 描述
+
+            var messageBox = document.querySelectorAll('.message-box')
+            for (let i = 0; i < messageBox.length; i++) {
+              messageBox[i].style.display = 'flex'
+            }
+          } catch (e) {
+            console.log('call error: ', e)
+          }
+        }
+
+        function hangup() {
+          peerA.close()
+          peerB.close()
+          peerA = null
+          peerB = null
+
+          channelA.close()
+          channelB.close()
+          channelA = null
+          channelB = null
+
+          var messageBox = document.querySelectorAll('.message-box')
+          for (let i = 0; i < messageBox.length; i++) {
+            messageBox[i].style.display = 'none'
+          }
+          document.querySelector('.message-list').innerHTML = ''
+          document.querySelector('.message-box textarea').value = ''
+        }
+      })
+    </script>
+    <script>
+      initSocket()
+      function initSocket() {
+        var socket = io('http://localhost:3001')
+        socket.on('connect', function () {
+          console.log('socket 链接成功！')
+          socket.emit('join', 'xxx')
+        })
+        socket.on('event', function (data) {})
+        socket.on('disconnect', function () {})
+      }
+
+      window.onbeforeunload = function (e) {
+        var e = window.event || e
+        e.returnValue = '确定离开当前页面吗？'
+      }
+    </script>
+  </body>
+</html> -->

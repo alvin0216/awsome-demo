@@ -1,0 +1,12 @@
+{
+  "name": "peer-demo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "peer": "^0.5.3"
+  },
+  "scripts": {
+    "dev": "npx peerjs -p 9000"
+  }
+}

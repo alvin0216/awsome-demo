@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>sender</title>
+  </head>
+  <body>
+    <video autoplay id="local"></video>
+    <video autoplay id="remote"></video>
+
+    <script src="./getUserMedia.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/0.3.16/peer.min.js"></script>
+    <script>
+      const localVideo = document.querySelector('#local')
+      const remoteVideo = document.querySelector('#remote')
+
+      function playVideo(videDom, mediaStream) {
+        if ('srcObject' in videDom) {
+          videDom.srcObject = mediaStream
+        } else {
+          // 防止在新的浏览器里使用它，应为它已经不再支持了
+          videDom.src = window.URL.createObjectURL(mediaStream)
+        }
+      }
+
+      const peer = new Peer('sender', {
+        host: 'localhost',
+        port: 9000,
+        path: '/',
+      })
+
+      getUserMedia().then((mediaStream) => {
+        playVideo(localVideo, mediaStream)
+        alert('本地流加载完毕 呼叫 peer1')
+
+        const call = peer.call('receiver', mediaStream)
+        call.on('stream', (remoteStream) => {
+          alert('收到 peer1 的视频流。开始加载')
+          playVideo(remoteVideo, remoteStream)
+        })
+      })
+    </script>
+  </body>
+</html>

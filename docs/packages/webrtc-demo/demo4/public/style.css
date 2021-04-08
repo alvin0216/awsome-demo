@@ -1,0 +1,34 @@
+.box {
+  display: flex;
+}
+
+.box .userList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width: 200px;
+  height: 100%;
+  border-right: 1px solid #ccc;
+}
+
+.box .userList li {
+  padding-left: 10px;
+}
+
+.box .userList li:hover {
+  background-color: #15daca;
+  color: #fff;
+}
+
+.box .userList li.me::after {
+  content: 'me';
+  float: right;
+  margin-right: 10px;
+  color: red;
+}
+
+video {
+  width: 400px;
+  height: 300px;
+  margin-left: 20px;
+}

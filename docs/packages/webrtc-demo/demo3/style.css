@@ -1,0 +1,33 @@
+.box {
+  display: flex;
+  justify-content: center;
+}
+video {
+  width: 400px;
+  height: 300px;
+  margin-left: 20px;
+  background-color: #ddd;
+}
+
+.item h3 {
+  text-align: center;
+}
+
+.item .btn-group {
+  width: 120px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+}
+
+.item .message-box h4 {
+  text-align: center;
+}
+
+.item .message-box {
+  margin-left: 20px;
+  width: 400px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}

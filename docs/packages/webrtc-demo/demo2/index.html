@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>webrtc</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="box">
+      <div class="item">
+        <video id="rtcA" controls autoplay></video>
+        <h3>Peer A</h3>
+      </div>
+      <div class="item">
+        <video id="rtcB" controls autoplay></video>
+        <h3>Peer B</h3>
+        <div class="btn-group">
+          <button class="call">呼叫</button>
+          <button class="hangup">挂断</button>
+        </div>
+      </div>
+    </div>
+    <script>
+      // 老的浏览器可能根本没有实现 mediaDevices，所以我们可以先设置一个空的对象
+      if (navigator.mediaDevices === undefined) {
+        navigator.mediaDevices = {}
+      }
+
+      // 一些浏览器部分支持 mediaDevices。我们不能直接给对象设置 getUserMedia
+      // 因为这样可能会覆盖已有的属性。这里我们只会在没有getUserMedia属性的时候添加它。
+      if (navigator.mediaDevices.getUserMedia === undefined) {
+        navigator.mediaDevices.getUserMedia = function (constraints) {
+          // 首先，如果有getUserMedia的话，就获得它
+          var getUserMedia =
+            navigator.getUserMedia ||
+            navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia ||
+            navigator.msGetUserMedia
+
+          // 一些浏览器根本没实现它 - 那么就返回一个error到promise的reject来保持一个统一的接口
+          if (!getUserMedia) {
+            return Promise.reject(
+              new Error('getUserMedia is not implemented in this browser')
+            )
+          }
+
+          // 否则，为老的navigator.getUserMedia方法包裹一个Promise
+          return new Promise(function (resolve, reject) {
+            getUserMedia.call(navigator, constraints, resolve, reject)
+          })
+        }
+      }
+
+      var constraints = { video: true, audio: true }
+      var localstream = null // 视频流 存储备用
+
+      navigator.mediaDevices
+        .getUserMedia(constraints)
+        .then(onSuccess)
+        .catch(onError)
+
+      function onSuccess(stream) {
+        var video = document.getElementById('rtcA')
+        // 旧的浏览器可能没有srcObject
+        if ('srcObject' in video) {
+          video.srcObject = stream
+        } else {
+          // 防止在新的浏览器里使用它，应为它已经不再支持了
+          video.src = window.URL.createObjectURL(stream)
+        }
+        localstream = stream
+        video.onloadedmetadata = function (e) {
+          video.play()
+        }
+        initPeer()
+      }
+
+      function onError(err) {
+        console.log(111)
+        alert(err.name + ': ' + err.message)
+      }
+    </script>
+    <script>
+      /**
+       * RTCPeerConnection
+       * @desc 由本地计算机到远端的 WebRTC 连接。该接口提供了创建，保持，监控，关闭连接的方法的实现。
+       *
+       * RTCPeerConnection 作为创建点对点连接的 API，是我们实现音视频实时通信的关键。在点对点通信的过程中，需要交换一系列信息，通常这一过程叫做 — 信令（signaling）。在信令阶段需要完成的任务：
+       *  * 为每个连接端创建一个 RTCPeerConnection，并添加本地媒体流。
+       *  * 获取并交换本地和远程描述：SDP 格式的本地媒体元数据。
+       *  * 获取并交换网络信息：潜在的连接端点称为 ICE 候选者。
+       *
+       */
+      var peerA = null
+      var peerB = null
+
+      /**
+       * 获取到媒体流后，调用函数初始化 RTCPeerConnection
+       *
+       */
+      function initPeer() {
+        // 创建输出端 PeerConnection
+        var PeerConnection =
+          window.RTCPeerConnection ||
+          window.mozRTCPeerConnection ||
+          window.webkitRTCPeerConnection
+
+        // === 创建输出端 A
+        peerA = new PeerConnection()
+        peerA.addStream(localstream) // 添加本地流
+
+        // 监听 A 的ICE候选信息，如果收集到，就添加给 B
+        peerA.onicecandidate = (event) => {
+          if (event.candidate) {
+            peerB.addIceCandidate(event.candidate)
+          }
+        }
+
+        // === 创建呼叫端 B
+        peerB = new PeerConnection()
+        peerB.onaddstream = (event) => {
+          // 监听是否有媒体流接入，如果有就赋值给 rtcB 的 src
+          console.log('event-stream', event)
+          var video = document.querySelector('#rtcB')
+          video.srcObject = event.stream
+        }
+        // 监听 B 的ICE候选信息 如果收集到，就添加给 A
+        peerB.onicecandidate = (event) => {
+          if (event.candidate) {
+            peerA.addIceCandidate(event.candidate)
+          }
+        }
+      }
+
+      document.querySelector('.call').addEventListener('click', call, false)
+      document.querySelector('.hangup').addEventListener('click', hangup, false)
+
+      /**
+       * peerB.createOffer start
+       * peerB.setLocalDescription(offerB): 呼叫端设置本地 offer 描述
+       * peerA.setRemoteDescription(offerB):  接收端设置远程 offer 描述
+       * peerA.createAnswer(): 创建 answerA
+       * peerA.setLocalDescription(answerA):  接收端设置本地 answer 描述
+       * peerB.setRemoteDescription(answerA): 呼叫端设置远程 answer 描述
+       *
+       */
+      async function call() {
+        if (!peerA || !peerB) {
+          // 判断是否有对应实例，没有就重新创建
+          initPeer()
+        }
+        try {
+          // 1. 创建 offer
+          let offer = await peerB.createOffer({
+            offerToReceiveAudio: 1,
+            offerToReceiveVideo: 1,
+          })
+          await peerB.setLocalDescription(offer) // 呼叫端设置本地 offer 描述
+          await peerA.setRemoteDescription(offer) // 接收端设置远程 offer 描述
+
+          const answer = await peerA.createAnswer() // 创建 answerA
+          await peerA.setLocalDescription(answer) // 接收端设置本地 answer 描述
+          await peerB.setRemoteDescription(answer) // 呼叫端设置远程 answer 描述
+        } catch (e) {
+          console.log('call error: ', e)
+        }
+      }
+
+      // async function call() {
+      //   if (!peerA || !peerB) {
+      //     // 判断是否有对应实例，没有就重新创建
+      //     initPeer()
+      //   }
+      //   try {
+      //     let offer = await peerB.createOffer({
+      //       offerToReceiveAudio: 1,
+      //       offerToReceiveVideo: 1,
+      //     }) // 创建 offer
+      //     await onCreateOffer(offer)
+      //   } catch (e) {
+      //     console.log('createOffer: ', e)
+      //   }
+      // }
+
+      // async function onCreateOffer(desc) {
+      //   try {
+      //     await peerB.setLocalDescription(desc) // 呼叫端设置本地 offer 描述
+      //   } catch (e) {
+      //     console.log('Offer-setLocalDescription: ', e)
+      //   }
+      //   try {
+      //     await peerA.setRemoteDescription(desc) // 接收端设置远程 offer 描述
+      //   } catch (e) {
+      //     console.log('Offer-setRemoteDescription: ', e)
+      //   }
+      //   try {
+      //     let answer = await peerA.createAnswer() // 接收端创建 answer
+      //     await onCreateAnswer(answer)
+      //   } catch (e) {
+      //     console.log('createAnswer: ', e)
+      //   }
+      // }
+
+      // async function onCreateAnswer(desc) {
+      //   try {
+      //     await peerA.setLocalDescription(desc) // 接收端设置本地 answer 描述
+      //   } catch (e) {
+      //     console.log('answer-setLocalDescription: ', e)
+      //   }
+      //   try {
+      //     await peerB.setRemoteDescription(desc) // 呼叫端设置远程 answer 描述
+      //   } catch (e) {
+      //     console.log('answer-setRemoteDescription: ', e)
+      //   }
+      // }
+
+      function hangup() {
+        peerA.close()
+        peerB.close()
+
+        peerA = null
+        peerB = null
+      }
+    </script>
+  </body>
+</html>
