@@ -150,23 +150,39 @@ function resolvePromise(promise2, x, resolve, reject) {
     throw new TypeError('Chaining cycle detected for promise');
   }
 
-  if (x instanceof MyPromise) {
-    // x 为 Promise
-    if (x.status === PENDING) {
-      x.then(
-        (y) => {
-          resolvePromise(promise2, y, resolve, reject);
-        },
-        (reason) => {
-          reject(reason);
-        },
-      );
-    } else {
-      x.then(resolve, reject);
+  // x 为 function / object
+  if ((x && typeof x === 'object') || typeof x === 'function') {
+    // 如果 resolvePromise 和 rejectPromise 均被调用，或者被同一参数调用了多次，则优先采用首次调用并忽略剩下的调用
+    let called = false;
+    try {
+      // 如果 then 是函数，将 x 作为函数的作用域 this 调用之
+      let then = x.then;
+      if (typeof then === 'function') {
+        then.call(
+          x,
+          (value) => {
+            if (called) return;
+            called = true;
+            resolvePromise(promise2, value, resolve, reject);
+          },
+          (reason) => {
+            if (called) return;
+            called = true;
+            reject(reason);
+          },
+        );
+      } else {
+        if (called) return;
+        called = true;
+        resolve(x);
+      }
+    } catch (e) {
+      if (called) return;
+      called = true;
+      reject(e);
     }
-  } else if ((x !== null && typeof x === 'function') || typeof x === 'object') {
-    // x 为对象和函数
-    // } else {
+  } else {
+    // 如果 x 不为对象或者函数，以 x 为参数执行 promise
     resolve(x);
   }
 }
