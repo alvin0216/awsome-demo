@@ -5,7 +5,7 @@ const REJECTED = 'rejected';
 
 class MyPromise {
   constructor(executor) {
-    // ! 类型校验 see test1
+    // ? 类型校验 see test1
     if (typeof executor !== 'function') {
       throw new TypeError(`Promise resolver ${executor} is not a function`);
     }
@@ -49,11 +49,17 @@ class MyPromise {
    */
   then(onFulfilled, onRejected) {
     if (this.status === FULFILLED) {
-      typeof onFulfilled === 'function' && onFulfilled(this.value);
+      //? then 方法为微任务，所以用 setTimeout 实现异步 see test2 test3
+      setTimeout(() => {
+        typeof onFulfilled === 'function' && onFulfilled(this.value);
+      });
     }
 
     if (this.status === REJECTED) {
-      typeof onRejected === 'function' && onRejected(this.reason);
+      //? then 方法为微任务，所以用 setTimeout 实现异步 see test2 test3
+      setTimeout(() => {
+        typeof onRejected === 'function' && onRejected(this.reason);
+      });
     }
 
     return this;
