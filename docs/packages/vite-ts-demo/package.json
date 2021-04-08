@@ -1,0 +1,23 @@
+{
+  "name": "vite-ts-demo",
+  "version": "1.0.0",
+  "description": "> TODO: description",
+  "author": "alvin <alvin00216@163.com>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "lib/vite-ts-demo.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "dev:node": "vite-node"
+  },
+  "devDependencies": {
+    "vite": "^2.1.5"
+  }
+}
