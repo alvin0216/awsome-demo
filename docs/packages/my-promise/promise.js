@@ -14,11 +14,15 @@ class MyPromise {
     this.value = undefined; // 终值
     this.reason = undefined; // 拒因
 
+    this.onFulfilledCallbacks = []; // 成功态回调队列
+    this.onRejectedCallbacks = []; //拒绝态回调队列
+
     // 成功态回调
     const resolve = (value) => {
       if (this.status === PENDING) {
         this.status = FULFILLED;
         this.value = value;
+        this.onFulfilledCallbacks.forEach((cb) => cb(this.value));
       }
     };
 
@@ -27,6 +31,7 @@ class MyPromise {
       if (this.status === PENDING) {
         this.status = REJECTED;
         this.reason = reason;
+        this.onRejectedCallbacks.forEach((cb) => cb(this.reason));
       }
     };
 
@@ -48,17 +53,53 @@ class MyPromise {
    *    then 方法必须返回一个 promise 对象。以支持链式调用
    */
   then(onFulfilled, onRejected) {
+    // onFulfilled, onRejected 参数校验
+    if (typeof onFulfilled !== 'function') {
+      onFulfilled = function (value) {
+        return value;
+      };
+    }
+
+    if (typeof onRejected !== 'function') {
+      onRejected = function (reason) {
+        throw reason;
+      };
+    }
+
+    /**
+     ** promiseA+: onFulfilled 和 onRejected 只有在执行环境堆栈仅包含平台代码时才可被调用
+     *    这里的平台代码指的是引擎、环境以及 promise 的实施代码。实践中要确保 onFulfilled 和 onRejected 方法异步执行
+     *    且应该在 then 方法被调用的那一轮事件循环之后的新执行栈中执行
+     *
+     * * so 这里用 setTimeout 异步执行了 then 方法
+     * ? see test3
+     */
     if (this.status === FULFILLED) {
       //? then 方法为微任务，所以用 setTimeout 实现异步 see test2 test3
       setTimeout(() => {
-        typeof onFulfilled === 'function' && onFulfilled(this.value);
+        onFulfilled(this.value);
       });
     }
 
     if (this.status === REJECTED) {
       //? then 方法为微任务，所以用 setTimeout 实现异步 see test2 test3
       setTimeout(() => {
-        typeof onRejected === 'function' && onRejected(this.reason);
+        onRejected(this.reason);
+      });
+    }
+
+    // ? 在  executor 函数中异步 reslove 就会有 this.status === PENDING  see test3 test4
+    if (this.status === PENDING) {
+      this.onFulfilledCallbacks.push((value) => {
+        setTimeout(() => {
+          onFulfilled(this.value);
+        });
+      });
+
+      this.onRejectedCallbacks.push((reason) => {
+        setTimeout(() => {
+          onRejected(this.reason);
+        });
       });
     }
 
