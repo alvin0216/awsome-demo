@@ -49,8 +49,21 @@ class MyPromise {
    *    如果 onFulfilled 不是函数，其必须被忽略
    *    如果 onRejected 不是函数，其必须被忽略
    *
+   *    1. 如果 onFulfilled 或者 onRejected 抛出一个异常 e，则 promise2 必须拒绝执行，并返回拒因 e
+   *    2. 如果 onFulfilled 不是函数且 promise1 成功执行， promise2 必须成功执行并返回相同的值
+   *    3. 如果 onRejected 不是函数且 promise1 拒绝执行， promise2 必须拒绝执行并返回相同的据因
+   *
    * 返回值
    *    then 方法必须返回一个 promise 对象。以支持链式调用
+   *
+   * * onFulfilled 和 onRejected 如果有返回值 x
+   * * x 为 Promise
+   *   如果 x 处于等待态， promise 需保持为等待态直至 x 被执行或拒绝
+   *   如果 x 处于执行态，用相同的值执行 promise
+   *   如果 x 处于拒绝态，用相同的据因拒绝 promise
+   *
+   * * x 为对象或函数
+   *
    */
   then(onFulfilled, onRejected) {
     // onFulfilled, onRejected 参数校验
@@ -66,44 +79,67 @@ class MyPromise {
       };
     }
 
-    /**
-     ** promiseA+: onFulfilled 和 onRejected 只有在执行环境堆栈仅包含平台代码时才可被调用
-     *    这里的平台代码指的是引擎、环境以及 promise 的实施代码。实践中要确保 onFulfilled 和 onRejected 方法异步执行
-     *    且应该在 then 方法被调用的那一轮事件循环之后的新执行栈中执行
-     *
-     * * so 这里用 setTimeout 异步执行了 then 方法
-     * ? see test3
-     */
-    if (this.status === FULFILLED) {
-      //? then 方法为微任务，所以用 setTimeout 实现异步 see test2 test3
-      setTimeout(() => {
-        onFulfilled(this.value);
-      });
-    }
-
-    if (this.status === REJECTED) {
-      //? then 方法为微任务，所以用 setTimeout 实现异步 see test2 test3
-      setTimeout(() => {
-        onRejected(this.reason);
-      });
-    }
-
-    // ? 在  executor 函数中异步 reslove 就会有 this.status === PENDING  see test3 test4
-    if (this.status === PENDING) {
-      this.onFulfilledCallbacks.push((value) => {
+    // ? see test5
+    let promise2 = new MyPromise((resolve, reject) => {
+      /**
+       ** promiseA+: onFulfilled 和 onRejected 只有在执行环境堆栈仅包含平台代码时才可被调用
+       *    这里的平台代码指的是引擎、环境以及 promise 的实施代码。实践中要确保 onFulfilled 和 onRejected 方法异步执行
+       *    且应该在 then 方法被调用的那一轮事件循环之后的新执行栈中执行
+       *
+       * * so 这里用 setTimeout 异步执行了 then 方法
+       * ? see test3
+       */
+      if (this.status === FULFILLED) {
+        //? then 方法为微任务，所以用 setTimeout 实现异步 see test2 test3
         setTimeout(() => {
-          onFulfilled(this.value);
+          try {
+            const x = onFulfilled(this.value);
+            resolve(x);
+          } catch (e) {
+            reject(e);
+          }
         });
-      });
+      }
 
-      this.onRejectedCallbacks.push((reason) => {
+      if (this.status === REJECTED) {
+        //? then 方法为微任务，所以用 setTimeout 实现异步 see test2 test3
         setTimeout(() => {
-          onRejected(this.reason);
+          try {
+            const x = onRejected(this.reason);
+            resolve(x);
+          } catch (e) {
+            reject(e);
+          }
         });
-      });
-    }
+      }
 
-    return this;
+      // ? 在  executor 函数中异步 reslove 就会有 this.status === PENDING  see test3 test4
+      if (this.status === PENDING) {
+        this.onFulfilledCallbacks.push((value) => {
+          setTimeout(() => {
+            try {
+              const x = onFulfilled(this.value);
+              resolve(x);
+            } catch (e) {
+              reject(e);
+            }
+          });
+        });
+
+        this.onRejectedCallbacks.push((reason) => {
+          setTimeout(() => {
+            try {
+              const x = onRejected(this.reason);
+              resolve(x);
+            } catch (e) {
+              reject(e);
+            }
+          });
+        });
+      }
+    });
+
+    return promise2;
   }
 }
 
