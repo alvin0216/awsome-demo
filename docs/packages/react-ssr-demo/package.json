@@ -1,0 +1,49 @@
+{
+  "name": "react-ssr-demo",
+  "version": "1.0.0",
+  "description": "> TODO: description",
+  "author": "alvin <alvin00216@163.com>",
+  "homepage": "https://github.com/alvin0216/awsome-demo#readme",
+  "license": "ISC",
+  "main": "lib/react-ssr-demo.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alvin0216/awsome-demo.git"
+  },
+  "scripts": {
+    "dev": "npm-run-all --parallel dev:**",
+    "dev:start": "nodemon --watch build --exec node \"./build/bundle.js\"",
+    "dev:build:server": "webpack --config webpack.server.js --watch",
+    "dev:build:client": "webpack --config webpack.client.js --watch"
+  },
+  "bugs": {
+    "url": "https://github.com/alvin0216/awsome-demo/issues"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.11.0",
+    "@babel/plugin-transform-runtime": "^7.11.0",
+    "@babel/preset-env": "^7.11.0",
+    "@babel/preset-react": "^7.10.4",
+    "@babel/runtime-corejs2": "^7.11.0",
+    "babel-loader": "^8.1.0",
+    "nodemon": "^2.0.4",
+    "npm-run-all": "^4.1.5",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-merge": "^5.0.9",
+    "webpack-node-externals": "^2.5.0"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "express": "^4.17.1",
+    "express-http-proxy": "^1.6.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-redux": "^7.2.1",
+    "react-router-config": "^5.1.1",
+    "react-router-dom": "^5.2.0",
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0"
+  }
+}
