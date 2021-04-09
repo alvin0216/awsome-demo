@@ -1,0 +1,17 @@
+{
+  "name": "my-promise",
+  "version": "1.0.0",
+  "description": "> TODO: description",
+  "author": "alvin <alvin00216@163.com>",
+  "homepage": "https://github.com/alvin0216/awsome-demo#readme",
+  "license": "ISC",
+  "scripts": {
+    "test": "promises-aplus-tests test8.js"
+  },
+  "bugs": {
+    "url": "https://github.com/alvin0216/awsome-demo/issues"
+  },
+  "dependencies": {
+    "promises-aplus-tests": "^2.1.2"
+  }
+}
