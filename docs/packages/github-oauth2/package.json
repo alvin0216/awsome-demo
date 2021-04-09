@@ -1,0 +1,25 @@
+{
+  "name": "github-oauth2",
+  "version": "1.0.0",
+  "description": "> TODO: description",
+  "author": "alvin <alvin00216@163.com>",
+  "homepage": "https://github.com/alvin0216/awsome-demo#readme",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alvin0216/awsome-demo.git"
+  },
+  "scripts": {
+    "dev": "nodemon server.js"
+  },
+  "bugs": {
+    "url": "https://github.com/alvin0216/awsome-demo/issues"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "koa": "^2.13.1",
+    "koa-router": "^10.0.0",
+    "koa-static": "^5.0.0",
+    "nodemon": "^2.0.7"
+  }
+}

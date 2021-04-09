@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>github 授权登录</title>
+  <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+</head>
+
+<body>
+  <button>github login</button>
+  <pre id="json-renderer"></pre>
+
+  <script>
+    window.onload = function () {
+      const $button = document.querySelector('button');
+
+      const $render = document.querySelector('#json-renderer')
+      $button.onclick = function () {
+        const client_id = '6a45431255c2bce17377'; // github 注册  Settings -> Developer settings -> oAuth App 里拿
+        window.location.href = `https://github.com/login/oauth/authorize?client_id=${client_id}`;
+      };
+
+      function decodeQuery(url) {
+        const params = {};
+        const paramsStr = url.replace(/\.*\?/, ''); // a=1&b=2&c=&d=xxx&e
+        paramsStr.split('&').forEach(v => {
+          const d = v.split('=');
+          if (d[1] && d[0]) params[d[0]] = d[1];
+        });
+        return params;
+      }
+
+      const { code } = decodeQuery(window.location.search);
+
+      if (code) {
+        axios.get(`/github?code=${code}`).then(res => {
+          $render.innerHTML = JSON.stringify(res.data, null, 2);
+        });
+      }
+    };
+  </script>
+</body>
+
+</html>
