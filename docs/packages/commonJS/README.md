@@ -135,7 +135,7 @@ function requireFunc(filePath) {
 
 ## 实现代码
 
-```js
+```js | pure
 const fs = require('fs');
 const { resolve, extname } = require('path');
 const vm = require('vm'); // 虚拟机模块，沙箱运行，防止变量污染
@@ -149,7 +149,7 @@ function Module(id) {
 Module._cacheModule = {};
 
 /** 模块加载 */
-Module._load = function(filePath) {
+Module._load = function (filePath) {
   let fileName = Module._resolveFilename(filePath); // 文件路径解析
 
   // 判断缓存中是否有该模块
@@ -168,7 +168,7 @@ Module._load = function(filePath) {
 };
 
 /**  解析文件地址 filePath:string => string */
-Module._resolveFilename = filePath => {
+Module._resolveFilename = (filePath) => {
   // 文件名 *.js *.json 则直接返回
   if (/\.js$|\.json$/.test(filePath)) return resolve(__dirname, filePath);
 
@@ -197,7 +197,7 @@ Module._resolveFilename = filePath => {
 
 /** 不同模块编译的方法 */
 Module._extensions = {
-  '.js': function(module) {
+  '.js': function (module) {
     let fileStr = fs.readFileSync(module.id, 'utf8');
     const funcStr = `(function (exports, require, module, __filename, __dirname) {${fileStr}})`;
 
@@ -209,7 +209,7 @@ Module._extensions = {
       module,
     );
   },
-  '.json': function(module) {
+  '.json': function (module) {
     // 对于json文件的处理就相对简单了，将读取出来的字符串转换未JSON对象就可以了
     module.exports = JSON.parse(fs.readFileSync(module.id, 'utf8'));
   },
