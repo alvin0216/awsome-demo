@@ -19,3 +19,7 @@ hero:
 ---
 
 仓库地址 [awsome-demo](https://github.com/alvin0216/awsome-demo)
+
+---
+
+- [vite](https://vitejs.dev/guide/#scaffolding-your-first-vite-project)
