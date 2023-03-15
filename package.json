@@ -2,7 +2,7 @@
   "private": true,
   "name": "awsome-demo",
   "scripts": {
-    "start": "dumi dev",
+    "dev": "dumi dev",
     "build": "dumi build",
     "prettier": "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\""
   },
@@ -23,7 +23,6 @@
   },
   "devDependencies": {
     "dumi": "^1.0.12",
-    "lerna": "^3.22.1",
     "lint-staged": "^10.0.7",
     "prettier": "^1.19.1",
     "yorkie": "^2.0.0"
